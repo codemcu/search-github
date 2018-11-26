@@ -34,19 +34,19 @@
           .then(res => {
             console.log(res.items);
 
-            var ul = document.createElement('UL');
+            const ul = document.createElement('UL');
             container.appendChild(ul);
-            var resArray = res.items;
+            const resArray = res.items;
 
             resArray.forEach(function(item) {
 
-              var li = document.createElement('LI');
-              var img = document.createElement('IMG');
-              var div = document.createElement('DIV');
+              const li = document.createElement('LI');
+              const img = document.createElement('IMG');
+              const div = document.createElement('DIV');
               div.setAttribute('class', 'user-details');
-              var spanFollowers = document.createElement('SPAN');
-              var spanFollowings = document.createElement('SPAN');
-              var spanScore = document.createElement('SPAN');
+              const spanFollowers = document.createElement('SPAN');
+              const spanFollowings = document.createElement('SPAN');
+              const spanScore = document.createElement('SPAN');
 
               li.appendChild(document.createTextNode(item.login));
 
