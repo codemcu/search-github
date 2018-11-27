@@ -44,20 +44,20 @@
               const img = document.createElement('IMG');
               const div = document.createElement('DIV');
               div.setAttribute('class', 'user-details');
-              const spanFollowers = document.createElement('SPAN');
-              const spanFollowings = document.createElement('SPAN');
-              const spanScore = document.createElement('SPAN');
+              const divFollowers = document.createElement('DIV');
+              const divFollowings = document.createElement('DIV');
+              const divScore = document.createElement('DIV');
 
               li.appendChild(document.createTextNode(item.login));
 
-              spanScore.textContent = `Score: ${item.score}`;
+              divScore.innerHTML = `Score: <span>${item.score.toFixed(2)}</span>`;
 
               img.setAttribute('src', item.avatar_url);
 
               ul.appendChild(li);
               li.appendChild(img);
               li.appendChild(div);
-              div.appendChild(spanScore);
+              div.appendChild(divScore);
 
               // ul.addEventListener('click', function($event) {
               //   if ($event.target.tagName === 'LI') {
@@ -71,8 +71,8 @@
                   return dataFollowers.json();
                 })
                 .then(function(resFollowers) {
-                  spanFollowers.textContent = `Followers: ${resFollowers.length}`;
-                  div.appendChild(spanFollowers);
+                  divFollowers.innerHTML = `Followers: <span>${resFollowers.length}</span>`;
+                  div.appendChild(divFollowers);
 
                 });
 
@@ -82,8 +82,8 @@
                   return dataFollowings.json();
                 })
                 .then(function(resFollowings) {
-                  spanFollowings.textContent = `Followings: ${resFollowings.length}`;
-                  div.appendChild(spanFollowings);
+                  divFollowings.innerHTML = `Followings: <span>${resFollowings.length}</span>`;
+                  div.appendChild(divFollowings);
 
                 });
             });

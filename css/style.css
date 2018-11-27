@@ -38,10 +38,10 @@ p {
 }
 
 ul {
-  width: 500px;
+  width: 620px;
   margin: 0 auto 0;
   list-style-type: none;
-  background-color: #355C7D;
+  /*background-color: #355C7D;*/
   padding: 1.25rem 1.25rem 0.3125rem 1.25rem;
   color: #fff;
 }
@@ -49,8 +49,9 @@ ul {
 ul li {
   margin: 0.45rem 0 1.75rem 0;
   position: relative;
-  padding-left: 4.0625rem;
+  padding: 20px 4.0625rem 20px 110px;
   font-size: 1.25rem;
+  background-color: #355C7D;
 }
 
 ul li a {
@@ -58,12 +59,12 @@ ul li a {
 }
 
 ul li img {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   position: absolute;
-  left: 0;
-  top: 5%;
-  transform: translate(0%, 0%);
+  left: 4%;
+  top: 50%;
+  transform: translate(0%, -50%);
   border-radius: 50%;
   border: 0.125rem solid #F8B195;
   padding: 0.125rem;
