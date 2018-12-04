@@ -19,6 +19,27 @@
     }
   }
 
+  function createNetworking(item, type) {
+    const divFollower = document.createElement('DIV');
+    const divFollowing = document.createElement('DIV');
+    const divContainer = document.querySelector('.user-details');
+
+    fetch(`https://api.github.com/users/${item.login}/${type}`)
+      .then(function(data) {
+        return data.json();
+      })
+      .then(function(res) {
+        if (type === 'following') {
+          divFollowing.innerHTML = `Followings: <span>${res.length}</span>`;
+          divContainer.appendChild(divFollowing);
+        } else if (type === 'followers') {
+          divFollower.innerHTML = `Followers: <span>${res.length}</span>`;
+          divContainer.appendChild(divFollower);
+        }
+
+      });
+  }
+
   function searchUser($event) {
 
     if ($event.code === 'Enter' && $event.isTrusted) {
@@ -31,8 +52,6 @@
 
         if (document.querySelector('ul') !== null) {
           document.querySelector('ul').remove();
-          const ul = document.createElement('UL');
-          container.appendChild(ul);
         }
 
         const text = input.value.trim();
@@ -47,38 +66,18 @@
 
               resArray.forEach(function(item) {
 
-                const divFollowers = document.createElement('DIV');
-                const divFollowings = document.createElement('DIV');
+                // const divFollowers = document.createElement('DIV');
+                // const divFollowings = document.createElement('DIV');
 
                 createContainerUser(item);
+                createNetworking (item, 'followers');
+                createNetworking (item, 'following');
 
                 // ul.addEventListener('click', function($event) {
                 //   if ($event.target.tagName === 'LI') {
                 //     window.open(item.html_url);
                 //   }
                 // }, false);
-
-                fetch(`https://api.github.com/users/${item.login}/followers`)
-                  // .then(handleErrors)
-                  .then(function(dataFollowers) {
-                    return dataFollowers.json();
-                  })
-                  .then(function(resFollowers) {
-                    divFollowers.innerHTML = `Followers: <span>${resFollowers.length}</span>`;
-                    div.appendChild(divFollowers);
-
-                  });
-
-                fetch(`https://api.github.com/users/${item.login}/following`)
-                  // .then(handleErrors)
-                  .then(function(dataFollowings) {
-                    return dataFollowings.json();
-                  })
-                  .then(function(resFollowings) {
-                    divFollowings.innerHTML = `Followings: <span>${resFollowings.length}</span>`;
-                    div.appendChild(divFollowings);
-
-                  });
               });
             } else {
               feedBackMessage('No users found');
@@ -89,12 +88,12 @@
     }
 
     function createContainerUser(item) {
+      const ul = document.createElement('UL');
       const li = document.createElement('LI');
       const img = document.createElement('IMG');
       const div = document.createElement('DIV');
       div.setAttribute('class', 'user-details');
-      divFollowers = document.createElement('DIV');
-      divFollowings = document.createElement('DIV');
+
       const divScore = document.createElement('DIV');
 
       li.appendChild(document.createTextNode(item.login));
@@ -107,6 +106,7 @@
       li.appendChild(img);
       li.appendChild(div);
       div.appendChild(divScore);
+      container.appendChild(ul);
     }
 
   }
