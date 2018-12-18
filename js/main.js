@@ -4,111 +4,91 @@
   input.addEventListener('keyup', searchUser, false);
   const container = document.querySelector('.container');
 
-  function feedBackMessage (message) {
-    if (document.querySelector('P') !== null) {
-      document.querySelector('P').remove();
-      const p = document.createElement('P');
-      container.appendChild(p);
-      p.textContent = message;
-      return false;
-    } else {
-      const p = document.createElement('P');
-      container.appendChild(p);
-      p.textContent = message;
-      return false;
-    }
-  }
-
-  function createNetworking(item, type) {
-    const divFollower = document.createElement('DIV');
-    const divFollowing = document.createElement('DIV');
-    const divContainer = document.querySelector('.user-details');
-
-    fetch(`https://api.github.com/users/${item.login}/${type}`)
-      .then(function(data) {
-        return data.json();
-      })
-      .then(function(res) {
-        if (type === 'following') {
-          divFollowing.innerHTML = `Followings: <span>${res.length}</span>`;
-          divContainer.appendChild(divFollowing);
-        } else if (type === 'followers') {
-          divFollower.innerHTML = `Followers: <span>${res.length}</span>`;
-          divContainer.appendChild(divFollower);
-        }
-
-      });
-  }
-
-  function searchUser($event) {
+  async function searchUser($event) {
 
     if ($event.code === 'Enter' && $event.isTrusted) {
 
-      if (input.value.trim() === '') {
+      if (!input.value.trim()) {
 
-        feedBackMessage('Please enter username');
+        const p = document.createElement('P');
+        container.appendChild(p);
+        p.textContent = 'Please enter username';
+        return false;
 
       } else {
 
-        if (document.querySelector('ul') !== null) {
+        const isUl = document.querySelector('ul') !== null;
+
+        if (isUl) {
           document.querySelector('ul').remove();
         }
 
         const text = input.value.trim();
 
-        fetch(`https://api.github.com/search/users?q=${text}+in%3Afullname&type=Users`)
-          .then(data => data.json())
-          .then(res => {
-
-            if (res && res.items.length) {
-
-              const resArray = res.items;
-
-              resArray.forEach(function(item) {
-
-                // const divFollowers = document.createElement('DIV');
-                // const divFollowings = document.createElement('DIV');
-
-                createContainerUser(item);
-                createNetworking (item, 'followers');
-                createNetworking (item, 'following');
-
-                // ul.addEventListener('click', function($event) {
-                //   if ($event.target.tagName === 'LI') {
-                //     window.open(item.html_url);
-                //   }
-                // }, false);
-              });
-            } else {
-              feedBackMessage('No users found');
-            }
-          });
+        const response = await callApi(`https://api.github.com/search/users?q=${text}+in%3Afullname&type=Users`);
+        generateUserList(response);
 
       }
     }
 
-    function createContainerUser(item) {
-      const ul = document.createElement('UL');
-      const li = document.createElement('LI');
-      const img = document.createElement('IMG');
-      const div = document.createElement('DIV');
-      div.setAttribute('class', 'user-details');
+  }
 
-      const divScore = document.createElement('DIV');
+  function ajax(url) {
+    return new Promise((resolve, reject) => {
+      fetch(url)
+        .then(response => {
+          if (response.status === 200) {
+            resolve(response.json())
+          } else {
+            reject(response.json());
+          }
+        })
+        .catch(error => console.log(error));
+    })
+  }
 
-      li.appendChild(document.createTextNode(item.login));
+  async function callUserProfile(url) {
+    return await ajax(url);
+  }
 
-      divScore.innerHTML = `Score: <span>${item.score.toFixed(2)}</span>`;
+  async function callApi(url) {
+    return await ajax(url);
+  }
 
-      img.setAttribute('src', item.avatar_url);
+  function generateUserList(data) {
+    const ul = document.createElement('UL');
+    container.appendChild(ul);
 
-      ul.appendChild(li);
-      li.appendChild(img);
-      li.appendChild(div);
-      div.appendChild(divScore);
-      container.appendChild(ul);
-    }
+    const resArray = data.items;
 
+    resArray.forEach(async function (item) {
+      const urls = item.url;
+      const netWorking = await callUserProfile(urls);
+      const div = makeTemplate(item, netWorking);
+      ul.insertAdjacentHTML('afterbegin', div);
+
+    })
+  }
+
+  function makeTemplate(item, netWorking) {
+    const template = `
+      <li>${item.login}
+        <img src="${item.avatar_url}">
+        <div class="user-details">
+          <div>Score: 
+            <span>${item.score.toFixed(2)}</span>
+          </div>
+          <div>
+            <span>Followers: ${netWorking.followers}</span>
+          </div>
+          <div>
+            <span>Followings: ${netWorking.following}</span>
+          </div>
+        </div>
+       </li>
+    `;
+
+    return template;
   }
 
 })();
