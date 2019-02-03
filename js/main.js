@@ -1,22 +1,15 @@
-(function () {
+(() => {
 
   const input = document.querySelector('input');
   input.addEventListener('keyup', searchUser, false);
   const container = document.querySelector('.container');
 
-  async function searchUser($event) {
+  async function searchUser(event) {
 
     try {
-      if ($event.code === 'Enter' && $event.isTrusted) {
+      if (event.code === 'Enter' && event.isTrusted) {
 
-        if (!input.value.trim()) {
-
-          const p = document.createElement('P');
-          container.appendChild(p);
-          p.textContent = 'Please enter username';
-          return false;
-
-        } else {
+        if (!!input.value.trim()) {
 
           const isUl = document.querySelector('ul') !== null;
 
@@ -28,6 +21,13 @@
 
           const response = await callApi(`https://api.github.com/search/users?q=${text}+in%3Afullname&type=Users`);
           generateUserList(response);
+
+        } else {
+
+          const p = document.createElement('P');
+          container.appendChild(p);
+          p.textContent = 'Please enter username';
+          return false;
 
         }
       }
@@ -60,6 +60,7 @@
   }
 
   async function callApi(url) {
+    url = 'http://httpstat.us/500';
     try {
       return await ajax(url);
     } catch (error) {
@@ -93,7 +94,7 @@
           <img src="${item.avatar_url}">
         </a>
         <div class="user-details">
-          <div>Score: 
+          <div>Score:
             <span>${item.score.toFixed(2)}</span>
           </div>
           <div>
