@@ -11,10 +11,11 @@
 
         if (!!input.value.trim()) {
 
-          const isUl = document.querySelector('ul') !== null;
-
-          if (isUl) {
+          if (document.querySelector('ul') !== null) {
             document.querySelector('ul').remove();
+          }
+          if (document.querySelector('p') !== null) {
+            document.querySelector('p').remove();
           }
 
           const text = input.value.trim();
@@ -23,16 +24,14 @@
           generateUserList(response);
 
         } else {
-
           const p = document.createElement('P');
           container.appendChild(p);
           p.textContent = 'Please enter username';
           return false;
-
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log('searchUser', error);
     }
 
   }
@@ -47,61 +46,60 @@
             reject(response.json());
           }
         })
-        .catch(error => console.log(error));
+        .catch(error => console.log('ajax', error));
     })
   }
 
-  async function callUserProfile(url) {
-    try {
-      return await ajax(url);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   async function callApi(url) {
-    url = 'http://httpstat.us/500';
     try {
       return await ajax(url);
     } catch (error) {
-      console.log(error);
+      console.log('callApi', error);
     }
   }
 
   function generateUserList(data) {
-    const ul = document.createElement('UL');
-    container.appendChild(ul);
+    if (data.items && data.items.length) {
+      const ul = document.createElement('UL');
+      container.appendChild(ul);
 
-    const resArray = data.items;
+      const users = data.items;
+      const urls = users.map(user => user.url);
+      const request = urls.map(url => fetch(url).then(res => res.json()));
 
-    resArray.forEach(async function (item) {
-      try {
-        const urls = item.url;
-        const netWorking = await callUserProfile(urls);
-        const div = makeTemplate(item, netWorking);
-        ul.insertAdjacentHTML('afterbegin', div);
-      } catch (error) {
-        console.log(error);
-      }
+      Promise.all(request)
+        .then(res => {
+          res.forEach( item => {
+            const div = makeTemplate(item);
+            ul.insertAdjacentHTML('afterbegin', div);
+          });
+        })
+        .catch(err => console.log(err));
+    } else {
+      const p = document.createElement('P');
+      container.appendChild(p);
+      p.textContent = 'Please enter a valid name';
+      return false;
+    }
 
-    })
   }
 
-  function makeTemplate(item, netWorking) {
-    const template = `
+  function makeTemplate(item) {
+    const template =
+    `
       <li>${item.login}
         <a href="${item.html_url}" target="_blank">
           <img src="${item.avatar_url}">
         </a>
         <div class="user-details">
           <div>Score:
-            <span>${item.score.toFixed(2)}</span>
+            <span></span>
           </div>
           <div>
-            <span>Followers: ${netWorking.followers}</span>
+            <span>Followers: ${item.followers}</span>
           </div>
           <div>
-            <span>Followings: ${netWorking.following}</span>
+            <span>Followings: ${item.following}</span>
           </div>
         </div>
        </li>
